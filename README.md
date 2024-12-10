@@ -22,3 +22,26 @@ The implementation of the server and the ```server.js``` is not important for th
 
 Every data source in this project was created for test purposes. If any request takes more than 5 seconds to execute, there is something wrong with the implementation.
 
+## Improvements
+
+#### Code Quality and Readability:
+
+- Split functionality into dedicated modules (as we did with processMeetings.js)
+- Implement proper logging with levels (error, info, debug) instead of console.log, winston maybe?
+- Add unit tests for each module with mock responses. Also a "live" one in case the API changes.
+- Nice to have: TypeScript for better type safety and documentation
+
+#### Project Architecture:
+
+- Create a proper service layer to separate business logic from data access.
+- Implement a queue system with fail retry.
+- Add configuration management for different environments, good for testing and local dev.
+- Create an abstraction layer for HubSpot API to isolate external dependencies. Like a repository? Maybe we offer another service like HubSpot, we would only need to change implementation instead of interfaces.
+
+### Performance:
+
+- Add caching layer for frequently accessed data. IMPORTANT.
+- Implement rate limiting to prevent API throttling, configurable via the queue.
+- Add parallel processing for independent operations.
+- Monitor and optimize database queries.
+- Add proper indexing for MongoDB collections.
