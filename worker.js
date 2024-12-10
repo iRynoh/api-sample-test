@@ -1,26 +1,15 @@
 const hubspot = require('@hubspot/api-client');
 const { queue } = require('async');
+const fs = require('fs');
 const _ = require('lodash');
 
-const { filterNullValuesFromObject, goal } = require('./utils');
+const { filterNullValuesFromObject, goal, generateLastModifiedDateFilter} = require('./utils');
 const Domain = require('./Domain');
+const processMeetings = require("./services/processMeetings");
 
 const hubspotClient = new hubspot.Client({ accessToken: '' });
 const propertyPrefix = 'hubspot__';
 let expirationDate;
-
-const generateLastModifiedDateFilter = (date, nowDate, propertyName = 'hs_lastmodifieddate') => {
-  const lastModifiedDateFilter = date ?
-    {
-      filters: [
-        { propertyName, operator: 'GTE', value: `${date.valueOf()}` },
-        { propertyName, operator: 'LTE', value: `${nowDate.valueOf()}` }
-      ]
-    } :
-    {};
-
-  return lastModifiedDateFilter;
-};
 
 const saveDomain = async domain => {
   // disable this for testing purposes
@@ -316,6 +305,13 @@ const pullDataFromHubspot = async () => {
       console.log('process companies');
     } catch (err) {
       console.log(err, { apiKey: domain.apiKey, metadata: { operation: 'processCompanies', hubId: account.hubId } });
+    }
+
+    try {
+      await processMeetings(domain, account.hubId, q, hubspotClient, expirationDate, refreshAccessToken);
+      console.log('process meetings');
+    } catch (err) {
+      console.log(err, { apiKey: domain.apiKey, metadata: { operation: 'processMeetings', hubId: account.hubId } });
     }
 
     try {

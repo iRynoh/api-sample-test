@@ -27,8 +27,22 @@ const goal = actions => {
   console.log(actions);
 };
 
+const generateLastModifiedDateFilter = (date, nowDate, propertyName = 'hs_lastmodifieddate') => {
+  const lastModifiedDateFilter = date ?
+      {
+        filters: [
+          { propertyName, operator: 'GTE', value: `${date.valueOf()}` },
+          { propertyName, operator: 'LTE', value: `${nowDate.valueOf()}` }
+        ]
+      } :
+      {};
+
+  return lastModifiedDateFilter;
+};
+
 module.exports = {
   filterNullValuesFromObject,
   normalizePropertyName,
-  goal
+  goal,
+  generateLastModifiedDateFilter
 };
